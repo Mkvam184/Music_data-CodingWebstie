@@ -1,0 +1,28 @@
+name: Auto Sync Music to Firebase
+
+on:
+  workflow_dispatch: # Cho phép bấm nút chạy thủ công trên GitHub
+  schedule:
+    - cron: '0 0 * * *' # Tự động chạy mỗi ngày 1 lần vào lúc 0:00 UTC
+
+jobs:
+  sync-music-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Create serviceAccountKey.json from GitHub Secret
+        run: |
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > serviceAccountKey.json
+
+      - name: Run sync script
+        run: node sync-music.js
